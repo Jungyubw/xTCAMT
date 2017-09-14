@@ -1,0 +1,16 @@
+xtcamt-lite-client/.idea/
+xtcamt-lite-client/bower_components/
+xtcamt-lite-client/node_modules/
+.project
+.settings/
+xtcamt-lite-client/.sass-cache/
+xtcamt-lite-client/.tmp/
+xtcamt-lite-controller/.classpath
+xtcamt-lite-controller/.project
+xtcamt-lite-controller/.settings/
+xtcamt-lite-controller/src/main/webapp/
+xtcamt-lite-controller/target/
+xtcamt-lite-domain/target/
+xtcamt-lite-repo/target/
+xtcamt-lite-resource/target/
+xtcamt-lite-service/target/
