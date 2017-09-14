@@ -79,8 +79,8 @@ app.config(function ($routeProvider, RestangularProvider, $httpProvider, Keepali
         .when('/tp', {
             templateUrl: 'views/tp.html'
         })
-        .when('/profiles', {
-            templateUrl: 'views/profiles.html'
+        .when('/schema', {
+            templateUrl: 'views/schema.html'
         })
         .when('/doc', {
             templateUrl: 'views/doc.html'
@@ -112,15 +112,6 @@ app.config(function ($routeProvider, RestangularProvider, $httpProvider, Keepali
             templateUrl: 'views/account/userAccount.html',
             controller: 'AccountMgtCtrl'
         })
-//        .when('/account', {
-//            templateUrl: 'views/account/account.html',
-//            controller: 'AccountCtrl',
-//            resolve: {
-//                login: ['LoginService', function(LoginService){
-//                    return LoginService();
-//                }]
-//            }
-//        })
         .when('/registerResetPassword', {
             templateUrl: 'views/account/registerResetPassword.html',
             controller: 'RegisterResetPasswordCtrl',
@@ -148,18 +139,9 @@ app.config(function ($routeProvider, RestangularProvider, $httpProvider, Keepali
         .otherwise({
             redirectTo: '/'
         });
-
-//    $http.defaults.headers.post['X-CSRFToken'] = $cookies['csrftoken'];
-
     $httpProvider.interceptors.push(function ($q) {
         return {
             request: function (config) {
-//            	console.log(config.url);
-//                return "http://localhost:8080/igamt"+ value;
-//                if(config.url.startsWith("api")){
-//                   config.url = "http://localhost:8080/igamt/"+  config.url;
-//                   console.log("config.url=" + config.url);
-//                }
                 return config || $q.when(config);
             }
         }
@@ -171,7 +153,6 @@ app.config(function ($routeProvider, RestangularProvider, $httpProvider, Keepali
             //if the response has a text and a type property, it is a message to be shown
             if (response.data && response.data.text && response.data.type) {
                 if (response.status === 401) {
-//                        console.log("setting login message");
                     loginMessage = {
                         text: response.data.text,
                         type: response.data.type,
@@ -206,15 +187,6 @@ app.config(function ($routeProvider, RestangularProvider, $httpProvider, Keepali
                     if (found === true) {
                         msg.show = false;
                     } else {
-//                        //hide the msg in 5 seconds
-//                                                setTimeout(
-//                                                    function() {
-//                                                        msg.show = false;
-//                                                        //tell angular to refresh
-//                                                        $rootScope.$apply();
-//                                                    },
-//                                                    10000
-//                                                );
                     }
                 }
             }

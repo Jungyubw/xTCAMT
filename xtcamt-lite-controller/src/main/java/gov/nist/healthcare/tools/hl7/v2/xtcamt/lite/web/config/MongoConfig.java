@@ -31,7 +31,7 @@ import com.mongodb.ServerAddress;
 
 @Configuration
 @EnableMongoRepositories(basePackages = { "gov.nist.healthcare" })
-@PropertySource(value = "classpath:tcl-mongo.properties")
+@PropertySource(value = "classpath:xtcamt-mongo.properties")
 public class MongoConfig extends AbstractMongoConfiguration {
 
 	@Autowired

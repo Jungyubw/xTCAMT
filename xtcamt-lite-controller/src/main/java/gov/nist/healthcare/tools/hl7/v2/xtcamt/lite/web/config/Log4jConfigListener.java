@@ -22,7 +22,7 @@ public class Log4jConfigListener implements ServletContextListener {
 		try {
 			Properties p = new Properties();
 			InputStream log4jFile = Log4jConfigListener.class
-					.getResourceAsStream("/tcl-log4j.properties");
+					.getResourceAsStream("/xtcamt-log4j.properties");
 			p.load(log4jFile);
 			String logDir = sce.getServletContext().getRealPath("/logs");
 

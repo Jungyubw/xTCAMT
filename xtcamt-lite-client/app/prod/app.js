@@ -77,8 +77,8 @@ app.config(function ($routeProvider, RestangularProvider, $httpProvider, Keepali
         .when('/tp', {
             templateUrl: 'views/tp.html'
         })
-        .when('/profiles', {
-            templateUrl: 'views/profiles.html'
+        .when('/schema', {
+            templateUrl: 'views/schema.html'
         })
         .when('/doc', {
             templateUrl: 'views/doc.html'
@@ -91,9 +91,6 @@ app.config(function ($routeProvider, RestangularProvider, $httpProvider, Keepali
         })
         .when('/config', {
             templateUrl: 'views/config.html'
-        })
-        .when('/download', {
-            templateUrl: 'views/download.html'
         })
         .when('/contact', {
             templateUrl: 'views/contact.html'
@@ -410,11 +407,6 @@ app.run(function ($rootScope, $location, Restangular, $modal, $filter, base64, u
         }
         $rootScope.requests401 = [];
         $location.url('/home');
-
-
-        $rootScope.loadProfiles();
-
-
     });
 
     /*jshint sub: true */

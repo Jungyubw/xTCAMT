@@ -7,7 +7,6 @@ angular.module('tcl').controller('ProfileCtrl', function ($document, $scope, $ro
 
 
 	$scope.initProfiles= function () {
-		if(!$rootScope.profiles || $rootScope.profiles == [] ) $rootScope.loadProfiles();
 	};
 
 	$scope.confirmDeletePublicProfile = function(ev, profile) {
@@ -28,7 +27,6 @@ angular.module('tcl').controller('ProfileCtrl', function ($document, $scope, $ro
 					$rootScope.msg().type = "success";
 					$rootScope.msg().show = true;
 					$rootScope.manualHandle = true;
-                    $rootScope.loadProfiles();
 				}, function (error) {
 					$scope.error = error;
 					$scope.loading = false;
@@ -56,7 +54,6 @@ angular.module('tcl').controller('ProfileCtrl', function ($document, $scope, $ro
 				$rootScope.msg().type = "success";
 				$rootScope.msg().show = true;
 				$rootScope.manualHandle = true;
-                $rootScope.loadProfiles();
 			}, function (error) {
 				$scope.error = error;
 				$scope.loading = false;
@@ -77,7 +74,7 @@ angular.module('tcl').controller('ProfileCtrl', function ($document, $scope, $ro
 			clickOutsideToClose:false,
 			fullscreen: false // Only for -xs, -sm breakpoints.
 		}).then(function() {
-            $rootScope.loadProfiles();
+
 		}, function() {
 
 		});
@@ -93,7 +90,6 @@ angular.module('tcl').controller('ProfileCtrl', function ($document, $scope, $ro
 			clickOutsideToClose:false,
 			fullscreen: false // Only for -xs, -sm breakpoints.
 		}).then(function() {
-            $rootScope.loadProfiles();
 		}, function() {
 		});
 	};
@@ -108,7 +104,6 @@ angular.module('tcl').controller('ProfileCtrl', function ($document, $scope, $ro
 			clickOutsideToClose:false,
 			fullscreen: false // Only for -xs, -sm breakpoints.
 		}).then(function() {
-            $rootScope.loadProfiles();
 		}, function() {
 		});
 	};
@@ -122,7 +117,6 @@ angular.module('tcl').controller('ProfileCtrl', function ($document, $scope, $ro
 			clickOutsideToClose:false,
 			fullscreen: false // Only for -xs, -sm breakpoints.
 		}).then(function() {
-            $rootScope.loadProfiles();
 		}, function() {
 
 		});

@@ -50,9 +50,6 @@
                   <label style="margin-left:4px;">Hide IG List:
     				<input type="checkbox" ng-model="ighidden">
    				</label>
-   				  <label style="margin-left:4px;">Hide Templates List:
-    				<input type="checkbox" ng-model="templateHidden">
-   				</label>
          		</span>
 	
 				<div class="panel panel-primary" ng-if="!ighidden">
@@ -80,28 +77,7 @@
                 <label class="badge" ng-click="decrementIg()"><i class="fa fa-caret-up" aria-hidden="true"></i></label>
                 </span>
                 </div>
-                <div class="panel panel-primary" ng-if="!templateHidden">
-                <div class="panel-heading panel-heading-collapsable" style="background-color:#4c70bb;">
-                    <i class="glyphicon glyphicon-list"></i> <strong>Templates</strong>
-                </div>
-                <div class="panel-body" style="height:{{templateHeigh}}px;overflow:auto;">
-                    <div class="">
-                        <div ng-include="'views/TemplateToc.html'"></div>
-                    </div>
-                </div>
-                </div>
-                
-				 <div style="text-align: center;" ng-if="!templateHidden">
-				<span>
-              	<label class="badge" ng-click="incrementTemplate()"><i class="fa fa-caret-down" aria-hidden="true"></i></label>
-                <label class="badge" ng-click="decrementTemplate()"><i class="fa fa-caret-up" aria-hidden="true"></i></label>
-                </span>
-                </div>
         	</div>
-        	
-        	
-    	
-    
     	<div ng-class="{'col-md-9': !hideToc, 'col-md-11 col-98-5-percent':hideToc}">
         	<div class="panel panel-primary" style="margin-bottom:5px;">
             	<div class="panel-heading" style="background-color:#293856"><strong>{{CurrentTitle}}</strong></div>

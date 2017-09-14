@@ -36,7 +36,7 @@ public class WebAppInitializer implements WebApplicationInitializer
 		root.scan("gov.nist.healthcare.tools.hl7.v2.xtcamt.lite", "gov.nist.healthcare.nht.acmgt");
 		// web app servlet
 		servletContext.addListener(new ContextLoaderListener(root));
-		Dynamic servlet = servletContext.addServlet("tcamt", new DispatcherServlet(root));
+		Dynamic servlet = servletContext.addServlet("xtcamt", new DispatcherServlet(root));
 		servlet.setLoadOnStartup(1);
 		servlet.addMapping("/api/*");
 		servlet.setAsyncSupported(true);
