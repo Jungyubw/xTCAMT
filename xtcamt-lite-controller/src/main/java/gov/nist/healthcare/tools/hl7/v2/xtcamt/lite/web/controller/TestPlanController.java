@@ -6,10 +6,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringWriter;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -59,7 +57,6 @@ import gov.nist.healthcare.tools.hl7.v2.xtcamt.lite.domain.TestPlanDataStr;
 import gov.nist.healthcare.tools.hl7.v2.xtcamt.lite.domain.TestStep;
 import gov.nist.healthcare.tools.hl7.v2.xtcamt.lite.domain.XMLContainer;
 import gov.nist.healthcare.tools.hl7.v2.xtcamt.lite.repo.TestPlanRepository;
-import gov.nist.healthcare.tools.hl7.v2.xtcamt.lite.service.ProfileService;
 import gov.nist.healthcare.tools.hl7.v2.xtcamt.lite.service.TestPlanDeleteException;
 import gov.nist.healthcare.tools.hl7.v2.xtcamt.lite.service.TestPlanException;
 import gov.nist.healthcare.tools.hl7.v2.xtcamt.lite.service.TestPlanListException;
@@ -71,10 +68,7 @@ import gov.nist.healthcare.tools.hl7.v2.xtcamt.lite.web.TestPlanSaveResponse;
 import gov.nist.healthcare.tools.hl7.v2.xtcamt.lite.web.config.TestPlanChangeCommand;
 import gov.nist.healthcare.tools.hl7.v2.xtcamt.lite.web.exception.OperationNotAllowException;
 import gov.nist.healthcare.tools.hl7.v2.xtcamt.lite.web.exception.UserAccountNotFoundException;
-import gov.nist.healthcare.tools.hl7.v2.xtcamt.lite.web.util.ExportUtil;
 import gov.nist.hit.resources.deploy.client.SSLHL7v2ResourceClient;
-import gov.nist.hit.resources.deploy.model.Payload;
-import gov.nist.hit.resources.deploy.model.ResourceType;
 
 @RestController
 @RequestMapping("/testplans")
@@ -98,8 +92,6 @@ public class TestPlanController extends CommonController {
   @Autowired
   TestStoryConfigurationService testStoryConfigurationService;
 
-  @Autowired
-  ProfileService profileService;
   @Autowired
   private MailSender mailSender;
 
@@ -300,106 +292,6 @@ public class TestPlanController extends CommonController {
     return null;
   }
 
-  @RequestMapping(value = "/{id}/exportTestPackageHTML", method = RequestMethod.POST,
-      produces = "text/xml", consumes = "application/x-www-form-urlencoded; charset=UTF-8")
-  public void exportTestPackage(@PathVariable("id") String id, HttpServletRequest request,
-      HttpServletResponse response) throws Exception {
-    TestPlan tp = findTestPlan(id);
-    InputStream content = null;
-    content = new ExportUtil().exportTestPackageAsHtml(tp, testStoryConfigurationService);
-    response.setContentType("text/html");
-    response.setHeader("Content-disposition", "attachment;filename=" + escapeSpace(tp.getName())
-        + "-" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + "_TestPackage.html");
-    FileCopyUtils.copy(content, response.getOutputStream());
-
-  }
-
-  @RequestMapping(value = "/{id}/exportRBZip", method = RequestMethod.POST, produces = "text/xml",
-      consumes = "application/x-www-form-urlencoded; charset=UTF-8")
-  public void exportResourceBundleZip(@PathVariable("id") String id, HttpServletRequest request,
-      HttpServletResponse response) throws Exception {
-    log.info("Exporting as zip file RB with id=" + id);
-    TestPlan tp = findTestPlan(id);
-    InputStream content = null;
-    content = new ExportUtil().exportResourceBundleAsZip(tp, testStoryConfigurationService, 1234L);
-    response.setContentType("application/zip");
-    response.setHeader("Content-disposition", "attachment;filename=" + "Contextbased.zip");
-    FileCopyUtils.copy(content, response.getOutputStream());
-
-  }
-
-  @RequestMapping(value = "/pushRB/{testplanId}", method = RequestMethod.POST,
-      produces = "application/json")
-  public void pushRB(@PathVariable("testplanId") String testplanId, @RequestBody String host,
-      @RequestHeader("gvt-auth") String authorization, HttpServletRequest request)
-      throws Exception {
-
-    User u = userService.getCurrentUser();
-    Account account = accountRepository.findByTheAccountsUsername(u.getUsername());
-
-    SSLHL7v2ResourceClient client = new SSLHL7v2ResourceClient(host, authorization);
-    TestPlan tp = findTestPlan(testplanId);
-    InputStream testPlanIO = null;
-    Map<String, String> ipidMap = new HashMap<String, String>();
-
-    for (TestCaseOrGroup tcog : tp.getChildren()) {
-      if (tcog instanceof TestCaseGroup) {
-        TestCaseGroup group = (TestCaseGroup) tcog;
-        visitGroup(group, ipidMap);
-      } else if (tcog instanceof TestCase) {
-        TestCase tc = (TestCase) tcog;
-        for (TestStep ts : tc.getTeststeps()) {
-          addProfileId(ts, ipidMap);
-        }
-      }
-    }
-
-    try {
-      long range = 1234567L;
-      Random r = new Random();
-      Long rand = (long) (r.nextDouble() * range);
-
-      for (String id : ipidMap.keySet()) {
-        if (id != null && !id.isEmpty()) {
-          InputStream[] xmlArrayIO = new InputStream[3];
-          xmlArrayIO = new ExportUtil().exportProfileXMLArrayZip(id, profileService, rand);
-
-          xmlArrayIO[0].reset();
-          xmlArrayIO[1].reset();
-          xmlArrayIO[2].reset();
-
-          client.addOrUpdate(new Payload(xmlArrayIO[0]), ResourceType.PROFILE);
-          client.addOrUpdate(new Payload(xmlArrayIO[1]), ResourceType.VALUE_SET);
-          client.addOrUpdate(new Payload(xmlArrayIO[2]), ResourceType.CONSTRAINTS);
-        }
-      }
-
-
-      testPlanIO =
-          new ExportUtil().exportResourceBundleAsZip(tp, testStoryConfigurationService, rand);
-      testPlanIO.reset();
-      client.addOrUpdate(new Payload(testPlanIO), ResourceType.TEST_PLAN);
-      DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-
-      tp.setGvtDate("This TestPlan was published on GVT at "
-          + dateFormat.format(Calendar.getInstance().getTime()));
-      tp.setGvtPresence(true);
-      testPlanRepository.save(tp);
-
-      if (account == null) {
-        throw new UserAccountNotFoundException();
-      } else {
-        sendPushConfirmation(tp, account, host);
-      }
-
-    } catch (Exception e) {
-      this.sendPushFailConfirmation(tp, account, host, e);
-      e.printStackTrace();
-      throw new PushRBException(e);
-    }
-
-  }
-
   @RequestMapping(value = "/createSession", method = RequestMethod.POST,
       produces = "application/json")
   public boolean createSession(@RequestBody String host,
@@ -412,57 +304,6 @@ public class TestPlanController extends CommonController {
     } catch (Exception e) {
       return false;
     }
-  }
-
-  @RequestMapping(value = "{id}/deleteFromGVT", method = RequestMethod.POST,
-      produces = "application/json")
-  public boolean deleteFromGvt(@PathVariable("id") String id, @RequestBody String host,
-      @RequestHeader("gvt-auth") String authorization) {
-    try {
-      SSLHL7v2ResourceClient client = new SSLHL7v2ResourceClient(host, authorization);
-      if (client.validCredentials()) {
-        TestPlan tp = findTestPlan(id);
-        client.delete(tp.getLongId(), ResourceType.TEST_PLAN);
-        // TODO neeed to delete
-        tp.setGvtPresence(false);
-        tp.setGvtDate("This TestPlan is not published on GVT.");
-        testPlanRepository.save(tp);
-        return true;
-      } else {
-        return false;
-      }
-
-    } catch (Exception e) {
-      return false;
-    }
-  }
-
-  @RequestMapping(value = "/{tpid}/exportProfileXMLs", method = RequestMethod.POST,
-      produces = "text/xml", consumes = "application/x-www-form-urlencoded; charset=UTF-8")
-  public void exportProfileXMLs(@PathVariable("tpid") String tpid, HttpServletRequest request,
-      HttpServletResponse response) throws Exception {
-    log.info("Exporting as zip files for TestPlan with id=" + tpid);
-    TestPlan tp = findTestPlan(tpid);
-
-    Map<String, String> ipidMap = new HashMap<String, String>();
-
-    for (TestCaseOrGroup tcog : tp.getChildren()) {
-      if (tcog instanceof TestCaseGroup) {
-        TestCaseGroup group = (TestCaseGroup) tcog;
-        visitGroup(group, ipidMap);
-      } else if (tcog instanceof TestCase) {
-        TestCase tc = (TestCase) tcog;
-        for (TestStep ts : tc.getTeststeps()) {
-          addProfileId(ts, ipidMap);
-        }
-      }
-    }
-
-    InputStream content = null;
-    content = new ExportUtil().exportProfileXMLZip(ipidMap.keySet(), profileService, 1234L);
-    response.setContentType("application/zip");
-    response.setHeader("Content-disposition", "attachment;filename=" + "Global.zip");
-    FileCopyUtils.copy(content, response.getOutputStream());
   }
 
   private void addProfileId(TestStep ts, Map<String, String> ipidMap) {
@@ -484,20 +325,6 @@ public class TestPlanController extends CommonController {
         }
       }
     }
-
-  }
-
-  @RequestMapping(value = "/{id}/exportCover", method = RequestMethod.POST, produces = "text/xml",
-      consumes = "application/x-www-form-urlencoded; charset=UTF-8")
-  public void exportCoverPage(@PathVariable("id") String id, HttpServletRequest request,
-      HttpServletResponse response) throws Exception {
-    TestPlan tp = findTestPlan(id);
-    InputStream content = null;
-    content = new ExportUtil().exportCoverAsHtml(tp);
-    response.setContentType("text/html");
-    response.setHeader("Content-disposition", "attachment;filename=" + escapeSpace(tp.getName())
-        + "-" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + "_CoverPage.html");
-    FileCopyUtils.copy(content, response.getOutputStream());
 
   }
 
