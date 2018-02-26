@@ -1,0 +1,232 @@
+<style id="antiClickjack">
+body {
+	display: none !important;
+}
+</style>
+<script type="text/javascript">
+	if (self === top) {
+		var antiClickjack = document.getElementById("antiClickjack");
+		antiClickjack.parentNode.removeChild(antiClickjack);
+	} else {
+		top.location = self.location;
+	}
+</script>
+
+<script type="text/ng-template" id="EditTestStepMetadata.html">
+	<div ng-if="selectedTestStep">
+		<div ng-cloak>
+			<md-content>
+				<md-tabs md-dynamic-height md-border-bottom md-selected="selectedTestStepTab.tabNum">
+					<md-tab label="MetaData" md-on-select="initTestStepTab(0);" md-active="true">
+						<md-content class="md-padding">
+							<div class="row">
+								<div class="col-md-12">
+									<div class="col-md-6">
+										<md-input-container style="width: 100%;">
+											<label>Name</label>
+											<input ng-model="selectedTestStep.name" ng-change="recordChanged(selectedTestStep); updateCurrentTitle('Test Step', selectedTestStep.name);" type="text"/>
+										</md-input-container>
+									</div>
+
+									<div class="col-md-6">
+										<md-input-container style="width: 100%;">
+											<label>Description</label>
+											<input ng-model="selectedTestStep.description" ng-change="recordChanged(selectedTestStep)" type="text"/>
+										</md-input-container>
+									</div>
+								</div>
+							</div>
+
+							<div class="row" ng-if="selectedTestPlan.testplanType === 'ISOLATED'">
+								<div class="col-md-12">
+									<div class="col-md-6">
+										<md-input-container style="width: 100%;">
+											<label>Type</label>
+											<md-select ng-model="selectedTestStep.teststepType" ng-change="recordChanged(selectedTestStep);">
+												<md-option value="TA_INITIATOR">TA_INITIATOR</md-option>
+												<md-option value="TA_RESPONDER">TA_RESPONDER</md-option>
+												<md-option value="SUT_INITIATOR">SUT_INITIATOR</md-option>
+												<md-option value="SUT_RESPONDER">SUT_RESPONDER</md-option>
+												<md-option value="SUT_MANUAL">SUT_MANUAL</md-option>
+												<md-option value="TA_MANUAL">TA_MANUAL</md-option>
+											</md-select>
+										</md-input-container>
+									</div>
+								</div>
+							</div>
+
+							<div class="row" ng-if="selectedTestPlan.testplanType === 'DATA_INSTANCE'">
+								<div class="col-md-12">
+									<div class="col-md-6">
+										<md-input-container style="width: 100%;">
+											<label>Type</label>
+											<md-select ng-model="selectedTestStep.teststepType" ng-change="recordChanged(selectedTestStep);">
+												<md-option value="MANUAL">MANUAL</md-option>
+												<md-option value="INSTANCE">INSTANCE</md-option>
+											</md-select>
+										</md-input-container>
+									</div>
+								</div>
+							</div>
+						</md-content>
+					</md-tab>
+
+					<md-tab label="Test Story">
+						<md-content class="md-padding">
+							<div class="row">
+								<md-input-container style="width: 100%;">
+									<label>TestStep Test Story Configuration</label>
+									<md-select ng-model="selectedTestStep.testStoryConfigId" ng-change="recordChanged(selectedTestStep);updateTestStoryConfigForTestStep();">
+										<md-option ng-value="config.id" ng-repeat="config in testStoryConfigs track by config.id">{{::config.name}}</md-option>
+									</md-select>
+								</md-input-container>
+								<uib-accordion close-others="true">
+									<uib-accordion-group  ng-repeat ="entry in selectedTestStep.testStoryConfig.testStoryConfig track by entry.id" ng-init="status = {isOpen: false}" is-open="status.isOpen" ng-if="entry.present" >
+										<uib-accordion-heading>
+											<span style="color: white !important;">
+												<i class="fa" ng-class="{'fa-caret-down': status.isOpen, 'fa-caret-right': !status.isOpen}"></i>
+											{{::entry.title}}
+											</span>
+										</uib-accordion-heading>
+										<div class="col-md-12">
+											<textarea froala="froalaEditorOptions" ng-change="froalaChange(selectedTestStep.testStoryContent[entry.id],selectedTestStep)" name="teststorydesc" ng-model="selectedTestStep.testStoryContent[entry.id]"></textarea>
+										</div>
+									</uib-accordion-group>
+								</uib-accordion>
+							</div>
+						</md-content>
+					</md-tab>
+					<md-tab ng-disabled="isManualTestStep();" md-on-select="initTestStepTab(2);" label="XML Message">
+						<md-content class="md-padding">
+							<div class="col-md-12">
+								<span class="pull-right">
+									<button type="button" class="btn btn-info btn-sm" ng-click="verifiedParsing()">
+										<i class="fa fa-plus"></i>
+                        				Process XML message
+                    				</button>
+								</span>
+							</div>
+							<div class="col-md-12">
+								<textarea rows="10" type="cb" class="form-control" id="xmlMessage-textarea"
+							  		ng-model="selectedTestStep.xmlMessage"
+							  		wrap="off" style="overflow:auto;"/>
+							</div>
+						</md-content>
+					</md-tab>
+					<md-tab ng-disabled="!isTestDataReady()" md-on-select="initTestStepTab(3);" label="Test Data Categorization">
+						<md-content class="md-padding">
+							<div class="row" ng-if="!readyTestData">
+								The XML message is not valid
+							</div>
+							<div class="row" ng-if="readyTestData">
+								<div class="table-responsive">
+									<table  tt-table tt-params="messageParams" class="table table-bordered table-fix-header table-condensed profile-table">
+										<thead>
+										<tr class="tbl-header">
+											<th class="col-md-1">Name</th>
+											<th class="col-md-1">Type</th>
+											<th class="col-md-1">Cardi.</th>
+											<th class="col-md-1">Restrictions</th>
+											<th class="col-md-1">Info</th>
+											<th class="col-md-1">Value</th>
+											<th class="col-md-1">Test Data Cate.</th>
+										</tr>
+										</thead>
+										<tbody></tbody>
+									</table>
+								</div>
+							</div>
+						</md-content>
+					</md-tab>
+				</md-tabs>
+			</md-content>
+		</div>
+	</div>
+</script>
+
+<script type="text/ng-template" id="Element.html">
+	<tr tt-node is-branch="hasChildren(node)">
+		<td class="col-md-1">
+			<span title="{{node.iPath}}">
+				{{::node.name}}
+			</span>
+		</td>
+		<td class="col-md-1">
+			{{::node.nodeType}}
+		</td>
+		<td class="col-md-1">
+			[{{::node.minOccurs}}..{{::node.maxOccurs}}]
+		</td>
+		<td class="col-md-1">
+			-
+		</td>
+		<td class="col-md-1">
+			{{::node.info}}
+		</td>
+		<td class="col-md-1">
+			-
+		</td>
+		<td class="col-md-1">
+			-
+		</td>
+	</tr>
+</script>
+
+<script type="text/ng-template" id="LeafElement.html">
+	<tr tt-node is-branch="hasChildren(node)">
+		<td class="col-md-1">
+			<span title="{{node.iPath}}">
+				{{::node.name}}
+			</span>
+		</td>
+		<td class="col-md-1">
+			{{::node.nodeType}}
+		</td>
+		<td class="col-md-1">
+			[{{::node.minOccurs}}..{{::node.maxOccurs}}]
+		</td>
+		<td class="col-md-1">
+			{{::node.restrictions}}
+		</td>
+		<td class="col-md-1">
+			{{::node.info}}
+		</td>
+		<td class="col-md-1">
+			{{::node.value}}
+		</td>
+		<td class="col-md-1">
+			<select class="form-control" ng-model="node.testDataCategorization" ng-change="recordChanged(selectedTestStep); updateTestDataCategorization(node);" ng-options="testDataCategorization for testDataCategorization in testDataCategorizations">
+				<option value="">No test data Cate.</option>
+			</select>
+		</td>
+	</tr>
+</script>
+
+<script type="text/ng-template" id="Attribute.html">
+	<tr tt-node is-branch="hasChildren(node)">
+		<td class="col-md-1">
+			@{{::node.name}}
+		</td>
+		<td class="col-md-1">
+			-
+		</td>
+		<td class="col-md-1">
+			{{::node.use}}
+		</td>
+		<td class="col-md-1">
+			<p>FixedValue: {{::node.fixedValue}}</p>
+			<p>DefaultValue: {{::node.defaultValue}}</p>
+		</td>
+		<td class="col-md-1">
+			-
+		</td>
+		<td class="col-md-1">
+			{{::node.value}}
+		</td>
+		<td class="col-md-1">
+			<select class="form-control" ng-model="node.testDataCategorization" ng-change="recordChanged(selectedTestStep); updateTestDataCategorization(node);" ng-options="testDataCategorization for testDataCategorization in testDataCategorizations">
+				<option value="">No test data Cate.</option>
+			</select>
+		</td>
+	</tr>
+</script>
