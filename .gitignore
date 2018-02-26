@@ -8,7 +8,6 @@ tcamt-erx-client/.tmp/
 tcamt-erx-controller/.classpath
 tcamt-erx-controller/.project
 tcamt-erx-controller/.settings/
-tcamt-erx-controller/src/main/webapp/
 tcamt-erx-controller/target/
 tcamt-erx-domain/target/
 tcamt-erx-repo/target/

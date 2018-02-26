@@ -35,12 +35,12 @@ public class HTTPSecurityFilter implements Filter {
 
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
-		this.filterConfig = filterConfig;
+		this.setFilterConfig(filterConfig);
 	}
 
 	@Override
 	public void destroy() {
-		this.filterConfig = null;
+		this.setFilterConfig(null);
 	}
 
 	@Override
@@ -60,5 +60,13 @@ public class HTTPSecurityFilter implements Filter {
 		chain.doFilter(request, response);
 
 	}
+
+  public FilterConfig getFilterConfig() {
+    return filterConfig;
+  }
+
+  public void setFilterConfig(FilterConfig filterConfig) {
+    this.filterConfig = filterConfig;
+  }
 
 }

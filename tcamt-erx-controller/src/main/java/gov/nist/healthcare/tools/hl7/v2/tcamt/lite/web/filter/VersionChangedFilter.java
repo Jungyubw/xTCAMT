@@ -9,8 +9,6 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,12 +31,12 @@ public class VersionChangedFilter implements Filter {
 
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
-		this.filterConfig = filterConfig;
+		this.setFilterConfig(filterConfig);
 	}
 
 	@Override
 	public void destroy() {
-		this.filterConfig = null;
+		this.setFilterConfig(null);
 	}
 
 	@Override
@@ -59,5 +57,13 @@ public class VersionChangedFilter implements Filter {
 		// }
 		chain.doFilter(request, response);
 	}
+
+  public FilterConfig getFilterConfig() {
+    return filterConfig;
+  }
+
+  public void setFilterConfig(FilterConfig filterConfig) {
+    this.filterConfig = filterConfig;
+  }
 
 }

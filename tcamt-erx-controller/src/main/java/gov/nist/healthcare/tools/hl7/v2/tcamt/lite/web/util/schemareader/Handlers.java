@@ -32,6 +32,7 @@ import com.sun.xml.xsom.XSAttributeUse;
 import com.sun.xml.xsom.XSComplexType;
 import com.sun.xml.xsom.XSFacet;
 import com.sun.xml.xsom.XSModelGroup;
+import com.sun.xml.xsom.XSModelGroup.Compositor;
 import com.sun.xml.xsom.XSModelGroupDecl;
 import com.sun.xml.xsom.XSParticle;
 import com.sun.xml.xsom.XSRestrictionSimpleType;
@@ -123,13 +124,17 @@ class Handlers {
 
         String modelGroupType = "";
         if (path.startsWith(this.fullPath)) {
-            if (modelGroup.getCompositor() == modelGroup.getCompositor().SEQUENCE) {
+            modelGroup.getCompositor();
+            if (modelGroup.getCompositor() == Compositor.SEQUENCE) {
                 modelGroupType = "Sequence";
 
-            } else if (modelGroup.getCompositor() == modelGroup.getCompositor().CHOICE) {
-                modelGroupType = "Choice";
+            } else {
+              modelGroup.getCompositor();
+              if (modelGroup.getCompositor() == Compositor.CHOICE) {
+                  modelGroupType = "Choice";
 
-            } else { //UNDEFINED!!!
+              } else { //UNDEFINED!!!
+              }
             }
             elements.add(new Element(modelGroup.getChildren().length + "_" + modelGroupType + "_" + minOccurs + "_" + maxOccurs));
         }

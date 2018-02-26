@@ -1,0 +1,50 @@
+[{
+    "id" : "58a7576784ae0298f71bc218",
+    "_class" : "gov.nist.healthcare.tools.hl7.v2.tcamt.lite.domain.TestStoryConfiguration",
+    "name" : "Default",
+    "accountId" : null,
+    "testStoryConfig" : [ 
+        {
+            "id" : "Description",
+            "position" : 1,
+            "title" : "Description",
+            "present" : true,
+            "scope" : "default"
+        }, 
+        {
+            "id" : "Pre-condition",
+            "position" : 2,
+            "title" : "Pre-condition",
+            "present" : true,
+            "scope" : "default"
+        }, 
+        {
+            "id" : "Post-Condition",
+            "position" : 3,
+            "title" : "Post-Condition",
+            "present" : true,
+            "scope" : "default"
+        }, 
+        {
+            "id" : "Test Objectives",
+            "position" : 4,
+            "title" : "Test Objectives",
+            "present" : true,
+            "scope" : "default"
+        }, 
+        {
+            "id" : "Evaluation Criteria",
+            "position" : 5,
+            "title" : "Evaluation Criteria",
+            "present" : true,
+            "scope" : "default"
+        }, 
+        {
+            "id" : "Notes",
+            "position" : 6,
+            "title" : "Notes",
+            "present" : true,
+            "scope" : "default"
+        }
+    ]
+}]

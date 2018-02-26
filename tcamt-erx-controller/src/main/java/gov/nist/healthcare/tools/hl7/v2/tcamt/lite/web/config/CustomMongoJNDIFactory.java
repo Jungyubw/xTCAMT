@@ -50,7 +50,7 @@ public class CustomMongoJNDIFactory implements ObjectFactory {
 				username = propValue;
 			} else if (propName.equals("password")) {
 				password = propValue;
-			} else if (name.equals("port")) {
+			} else if (propName.equals("port")) {
 				try {
 					port = Integer.parseInt(propValue);
 				} catch (NumberFormatException e) {
@@ -65,6 +65,7 @@ public class CustomMongoJNDIFactory implements ObjectFactory {
 		validateProperty(host, "Invalid or empty mongo host");
 		validateProperty(username, "Invalid or empty mongo username");
 		validateProperty(password, "Invalid or empty mongo password");
+		validateProperty(port, "Invalid or empty mongo password");
 
 		MongoCredential credential = MongoCredential.createMongoCRCredential(
 				username, db, password.toCharArray());

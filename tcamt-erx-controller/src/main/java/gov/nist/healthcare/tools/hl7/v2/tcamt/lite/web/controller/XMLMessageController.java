@@ -20,7 +20,6 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import gov.nist.healthcare.tools.hl7.v2.tcamt.lite.service.exception.TestPlanSaveException;
-import gov.nist.healthcare.tools.hl7.v2.tcamt.lite.web.controller.container.RowType;
 import gov.nist.healthcare.tools.hl7.v2.tcamt.lite.web.controller.container.TestData;
 import gov.nist.healthcare.tools.hl7.v2.tcamt.lite.web.controller.container.TestDataContainer;
 import gov.nist.healthcare.tools.hl7.v2.tcamt.lite.web.controller.container.XMLMessageContainer;

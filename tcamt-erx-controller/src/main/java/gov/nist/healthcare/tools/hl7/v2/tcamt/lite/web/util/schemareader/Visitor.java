@@ -290,16 +290,4 @@ public class Visitor {
             exp.printStackTrace(System.out);
         }
     }
-
-    private static void parseAttribute(XSAttributeUse attUse) {
-        XSAttributeDecl attributeDecl = attUse.getDecl();
-        XSSimpleType xsAttributeType = attributeDecl.getType();
-        if (attUse.isRequired()) {
-            System.out.println("Use: Required");
-        } else {
-            System.out.println("Use: Optional");
-        }
-        System.out.println("Fixed: " + attributeDecl.getFixedValue());
-        System.out.println("Default: " + attributeDecl.getDefaultValue());
-    }
 }

@@ -1,0 +1,194 @@
+<style id="antiClickjack">body {
+	display: none !important;
+}</style> <script type="text/javascript">if (self === top) {
+		var antiClickjack = document.getElementById("antiClickjack");
+		antiClickjack.parentNode.removeChild(antiClickjack);
+	} else {
+		top.location = self.location;
+	}</script> <script type="text/ng-template" id="EditTestPlanMetadata.html"><md-content>
+		<md-tabs md-dynamic-height md-border-bottom md-selected="selectedTestPlanTab.tabNum">
+			<md-tab label="MetaData" md-active="true">
+				<md-content class="md-padding">
+					<div class="page-header">
+						<span class="header5">TestPlan Metadata</span>
+					</div>
+					<div class="row">
+						<div class="col-md-12">
+							<div class="col-md-6">
+								<md-input-container style="width: 100%;">
+									<label>Name</label>
+									<input ng-model="selectedTestPlan.name" ng-change="recordChanged(selectedTestPlan);updateCurrentTitle('Test Plan', selectedTestPlan.name);" type="text"/>
+								</md-input-container>
+							</div>
+							<div class="col-md-6">
+								<md-input-container style="width: 100%;">
+									<label>Description</label>
+									<input ng-model="selectedTestPlan.description" ng-change="recordChanged(selectedTestPlan)" type="text"/>
+								</md-input-container>
+							</div>
+						</div>
+
+						<div class="col-md-12">
+							<div class="col-md-6">
+								<md-input-container style="width: 100%;">
+									<label>Type</label>
+									<md-select ng-model="selectedTestPlan.testplanType" ng-change="recordChanged(selectedTestPlan);">
+										<md-option value="DATA_INSTANCE">Data Instance</md-option>
+										<md-option value="ISOLATED">Isolated</md-option>
+									</md-select>
+								</md-input-container>
+							</div>
+
+							<div class="col-md-6">
+								<md-input-container style="width: 100%;">
+									<label>Version</label>
+									<input ng-model="selectedTestPlan.version" ng-change="recordChanged(selectedTestPlan)" type="text"/>
+								</md-input-container>
+							</div>
+						</div>
+
+						<div class="col-md-12">
+							<div class="col-md-6">
+								<md-input-container style="width: 100%;">
+									<label>Domain</label>
+									<input ng-model="selectedTestPlan.domain" ng-change="recordChanged(selectedTestPlan)" type="text"/>
+								</md-input-container>
+							</div>
+
+							<div class="col-md-6">
+								<md-input-container style="width: 100%;">
+									<label>Date</label>
+									<input ng-model="selectedTestPlan.lastUpdateDate" ng-change="recordChanged(selectedTestPlan)" ng-disabled="true" type="text"/>
+								</md-input-container>
+							</div>
+						</div>
+					</div>
+
+					<div class="page-header">
+						<span class="header5">Test Story Configuration</span>
+					</div>
+					<div class="row">
+						<div class="col-md-12">
+							<div class="col-md-6">
+								<md-input-container style="width: 100%;">
+									<label>Empty Content in TestStory</label>
+									<md-switch ng-model="selectedTestPlan.emptyStoryContentIgnored" ng-change="recordChanged(selectedTestPlan);">
+										<div ng-if="selectedTestPlan.emptyStoryContentIgnored">will be ignored</div>
+										<div ng-if="!selectedTestPlan.emptyStoryContentIgnored">will be contained</div>
+									</md-switch>
+								</md-input-container>
+							</div>
+							<div class="col-md-6">
+								<md-input-container style="width: 100%;">
+									<label>TestPlan Test Story Configuration</label>
+									<md-select ng-model="selectedTestPlan.testStoryConfigId" ng-change="recordChanged(selectedTestPlan);updateGlobalTestStoryConfigForTestPlan();">
+										<md-option ng-value="config.id" ng-repeat="config in testStoryConfigs">{{config.name}}</md-option>
+									</md-select>
+								</md-input-container>
+							</div>
+						</div>
+
+						<div class="col-md-12">
+							<div class="col-md-6">
+								<md-input-container style="width: 100%;">
+									<label>TestGroup Test Story Configuration</label>
+									<md-select ng-model="selectedTestPlan.globalTestGroupConfigId" ng-change="recordChanged(selectedTestPlan);updateGlobalTestStoryConfigForTestGroup();">
+										<md-option ng-value="config.id" ng-repeat="config in testStoryConfigs">{{config.name}}</md-option>
+									</md-select>
+								</md-input-container>
+							</div>
+							<div class="col-md-6">
+								<md-input-container style="width: 100%;">
+									<label>TestCase Test Story Configuration</label>
+									<md-select ng-model="selectedTestPlan.globalTestCaseConfigId" ng-change="recordChanged(selectedTestPlan);updateGlobalTestStoryConfigForTestCase();">
+										<md-option ng-value="config.id" ng-repeat="config in testStoryConfigs">{{config.name}}</md-option>
+									</md-select>
+								</md-input-container>
+							</div>
+						</div>
+
+						<div class="col-md-12">
+							<div class="col-md-6">
+								<md-input-container style="width: 100%;">
+									<label>TestStep (Manual) Test Story Configuration</label>
+									<md-select ng-model="selectedTestPlan.globalManualTestStepConfigId" ng-change="recordChanged(selectedTestPlan);updateGlobalManualTestStoryConfigForTestStep();">
+										<md-option ng-value="config.id" ng-repeat="config in testStoryConfigs">{{config.name}}</md-option>
+									</md-select>
+								</md-input-container>
+							</div>
+							<div class="col-md-6">
+								<md-input-container style="width: 100%;">
+									<label>TestStep (Auto) Test Story Configuration</label>
+									<md-select ng-model="selectedTestPlan.globalAutoTestStepConfigId" ng-change="recordChanged(selectedTestPlan);updateGlobalAutoTestStoryConfigForTestStep();">
+										<md-option ng-value="config.id" ng-repeat="config in testStoryConfigs">{{config.name}}</md-option>
+									</md-select>
+								</md-input-container>
+							</div>
+						</div>
+					</div>
+				</md-content>
+			</md-tab>
+
+			<md-tab label="Published Cover Page">
+				<md-content class="md-padding">
+					<div class="row">
+						<div class="col-md-12">
+							<div class="col-md-6">
+								<md-input-container flex style="width: 100%;">
+									<label>Title</label>
+									<input ng-model="selectedTestPlan.coverPageTitle" ng-change="recordChanged(selectedTestPlan)" type="text"/>
+								</md-input-container>
+							</div>
+
+							<div class="col-md-6">
+								<md-input-container style="width: 100%;">
+									<label>Sub Title</label>
+									<input ng-model="selectedTestPlan.coverPageSubTitle" ng-change="recordChanged(selectedTestPlan)" type="text"/>
+								</md-input-container>
+							</div>
+						</div>
+						<div class="col-md-12">
+							<div class="col-md-6">
+								<md-input-container style="width: 100%;">
+									<label>Version</label>
+									<input ng-model="selectedTestPlan.coverPageVersion" ng-change="recordChanged(selectedTestPlan)" type="text"/>
+								</md-input-container>
+							</div>
+							<div class="col-md-6">
+								<md-input-container style="width: 100%;">
+									<label>Date</label>
+									<input ng-model="selectedTestPlan.coverPageDate" ng-change="recordChanged(selectedTestPlan)" type="text"/>
+								</md-input-container>
+							</div>
+						</div>
+					</div>
+				</md-content>
+			</md-tab>
+
+			<md-tab label="Test Story">
+				<md-content class="md-padding">
+					<div class="row">
+						<md-input-container style="width: 100%;">
+							<label>TestPlan Test Story Configuration</label>
+							<md-select ng-model="selectedTestPlan.testStoryConfigId" ng-change="print('top');recordChanged(selectedTestPlan);updateGlobalTestStoryConfigForTestPlan();">
+								<md-option ng-value="config.id" ng-repeat="config in testStoryConfigs">{{config.name}}</md-option>
+							</md-select>
+						</md-input-container>
+						<uib-accordion close-others="true">
+							<uib-accordion-group  ng-repeat ="entry in selectedTestPlan.testStoryConfig.testStoryConfig" ng-init="status = {isOpen: false}" is-open="status.isOpen" ng-if="entry.present" >
+								<uib-accordion-heading>
+									<span style="color: white !important;">
+										<i class="fa" ng-class="{'fa-caret-down': status.isOpen, 'fa-caret-right': !status.isOpen}"></i>
+										{{entry.title}}
+									</span>
+								</uib-accordion-heading>
+								<div class="col-md-12">
+									<textarea froala="froalaEditorOptions"  ng-change="froalaChange(selectedTestPlan.testStoryContent[entry.id], selectedTestPlan)" name="teststorydesc" ng-model="selectedTestPlan.testStoryContent[entry.id]"/></textarea>
+								</div>
+							</uib-accordion-group>
+						</uib-accordion>
+					</div>
+				</md-content>
+			</md-tab>
+		</md-tabs>
+	</md-content></script>

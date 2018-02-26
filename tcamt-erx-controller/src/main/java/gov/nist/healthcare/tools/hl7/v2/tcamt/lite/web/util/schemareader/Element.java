@@ -44,7 +44,7 @@ public class Element {
     XSElementDecl elem;
     int minOccurs, maxOccurs;
     HashMap<String, String> attributes = new HashMap<String, String>();
-    HashMap restrictions = new HashMap();
+    HashMap<String, String> restrictions = new HashMap<String, String>();
     String fullPath, name;
     String type;
     String subtree;
@@ -150,7 +150,6 @@ public class Element {
             for (String attr : attrs) {
                 String attrFeaturesAsString = (String) this.attributes.get(attr);
                 String[] attrFeatures = attrFeaturesAsString.split(", ");
-                String attrType = attrFeatures[0];
                 String attrUse = attrFeatures[1];
                 String attrFixed = attrFeatures[2];
                 String attrDefault = attrFeatures[3];
@@ -185,7 +184,7 @@ public class Element {
      *
      * @return Restrictions as a <code>HashMap</code>
      */
-    public HashMap getRestrictions() {
+    public HashMap<String, String> getRestrictions() {
         return restrictions;
     }
 
@@ -193,7 +192,7 @@ public class Element {
         this.attributes = attributes;
     }
 
-    void setRestrictions(HashMap restrictions) {
+    void setRestrictions(HashMap<String, String> restrictions) {
         this.restrictions = restrictions;
     }
 

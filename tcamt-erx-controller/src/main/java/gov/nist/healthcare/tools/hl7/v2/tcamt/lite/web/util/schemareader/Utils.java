@@ -49,9 +49,7 @@ public class Utils {
     try {
       pattern = Pattern.compile(regexp, flags);
       Matcher matcher = pattern.matcher(text);
-      boolean found = false;
-
-      while ((found = matcher.find())) {
+      while ((matcher.find())) {
         results.add(matcher.group());
       }
     } catch (PatternSyntaxException ex) {

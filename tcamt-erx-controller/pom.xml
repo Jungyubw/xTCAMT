@@ -70,18 +70,6 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>gov.nist</groupId>
-			<artifactId>hl7-v2-validation</artifactId>
-			<version>1.1.18</version>
-		</dependency>
-
-		<dependency>
-			<groupId>gov.nist.healthcare.hl7.v2.unifiedreport</groupId>
-			<artifactId>validation-proxy</artifactId>
-			<version>1.0.6</version>
-		</dependency>
-
-		<dependency>
 			<groupId>gov.nist.hit.hl7.tcamt.eRX</groupId>
 			<artifactId>tcamt-erx-service</artifactId>
 			<version>${project.version}</version>
@@ -93,11 +81,6 @@
 			<version>${project.version}</version>
 		</dependency>
 
-		<dependency>
-			<groupId>gov.nist.hit.hl7.tcamt.eRX</groupId>
-			<artifactId>tcamt-erx-resource</artifactId>
-			<version>${project.version}</version>
-		</dependency>
 
 		<dependency>
 			<groupId>org.springframework</groupId>

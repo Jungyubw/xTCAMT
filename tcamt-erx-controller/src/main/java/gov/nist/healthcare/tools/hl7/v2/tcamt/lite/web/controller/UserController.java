@@ -147,7 +147,7 @@ public class UserController {
 		try {
 			userService.createUserWithAuthorities(generatedUsername,
 					generatedPassword, "user," + account.getAccountType());
-			User user = userService.retrieveUserByUsername(generatedUsername);
+			userService.retrieveUserByUsername(generatedUsername);
 		} catch (Exception e) {
 			return new ResponseMessage(ResponseMessage.Type.danger,
 					"errorWithUser", null);
@@ -771,26 +771,6 @@ public class UserController {
 				+ "\n\n" + "Sincerely, " + "\n\n" + "The NIST TCAMT Team"
 				+ "\n\n" + "P.S: If you need help, contact us at '"
 				+ ADMIN_EMAIL + "'");
-		try {
-			this.mailSender.send(msg);
-		} catch (MailException ex) {
-			logger.error(ex.getMessage(), ex);
-		}
-	}
-
-	private void sendAccountRegistrationNotification(Account acc) {
-		SimpleMailMessage msg = new SimpleMailMessage(this.templateMessage);
-
-		msg.setSubject("Welcome! You are successfully registered on NIST TCAMT");
-		msg.setTo(acc.getEmail());
-		msg.setText("Dear " + acc.getUsername() + " \n\n"
-				+ "You've successfully registered on the NIST TCAMT Site."
-				+ " \n" + "Your username is: " + acc.getUsername() + " \n\n"
-				+ "Please refer to the user guide for the detailed steps. "
-				+ "\n\n" + "Sincerely, " + "\n\n" + "The NIST TCAMT Team"
-				+ "\n\n" + "P.S: If you need help, contact us at '"
-				+ ADMIN_EMAIL + "'");
-
 		try {
 			this.mailSender.send(msg);
 		} catch (MailException ex) {

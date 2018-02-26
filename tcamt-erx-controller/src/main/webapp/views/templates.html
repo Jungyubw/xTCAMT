@@ -1,0 +1,383 @@
+<style id="antiClickjack">body{display:none !important;}</style> <script type="text/javascript">if (self === top) {
+        var antiClickjack = document.getElementById("antiClickjack");
+        antiClickjack.parentNode.removeChild(antiClickjack);
+    } else {
+        top.location = self.location;
+    }</script> <script type="text/ng-template" id="warning-dialog.html"><div class="modal-header">
+        <h3>Your session will expire soon!</h3>
+    </div>
+    <div idle-countdown="countdown" ng-init="countdown=30" class="modal-body">
+        <progressbar type="warning" max="30" value="30" animate="false" class="progress-striped active">Your
+            session
+            will expire in {{countdown}} second(s).
+        </progressbar>
+    </div></script> <script type="text/ng-template" id="timedout-dialog.html"><div class="modal-body info-dlg">
+        <p>
+            Your session has expired.
+        </p>
+    </div></script> <script type="text/ng-template" id="NewAppVersion.html"><div class="modal-body error-dlg">
+        <div ng-include="'InvalidAppState.html'"></div>
+        <br/>
+        <div style="text-align:center">
+            <p>Please click
+                <button class="btn btn-xs btn-primary" ng-click="close()" type="button"
+                        title="Cancel" class="point">
+                    <i class="fa fa-refresh"></i>
+                    reset
+                </button>
+                to reinitialize your browser.</p>
+        </div>
+
+    </div></script> <script type="text/ng-template" id="CriticalError.html"><div class="modal-body error-dlg">
+        <p ng-bind="error">
+        </p>
+    </div>
+    <div class="modal-footer error-dlg">
+        <div class="pull-right">
+            <button class="btn btn-xs btn-primary" ng-click="close()" type="button"
+                    title="Cancel" class="point">
+                <i class="fa fa-times"></i>
+                Close
+            </button>
+        </div>
+    </div></script> <script type="text/ng-template" id="ConfirmLogout.html"><div class="modal-header">
+        <h3 class="modal-title">Logout Confirmation
+        </h3>
+    </div>
+    <div class="modal-body">
+        <p>You currently have unsaved changes. Are you sure you want to proceed ? All unsaved changes will
+            be lost</p>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary btn-sm" ng-disabled="loading" ng-click="logout()"><span><i
+                class="fa fa-sign-out fa-fw">&nbsp; </i>Logout</span>
+        </button>
+        <button class="btn btn-warning btn-sm" ng-disabled="loading" ng-click="cancel()"><span><i
+                class="fa fa-times fa-fw">&nbsp; </i>Cancel</span>
+        </button>
+    </div></script> <script type="text/ng-template" id="TestPlanCreationModal.html"><md-dialog aria-label="Create New TestPlan">
+        <form ng-cloak>
+            <md-toolbar>
+                <div class="md-toolbar-tools">
+                    <h2>Create New TestPlan</h2>
+                    <span flex></span>
+                </div>
+            </md-toolbar>
+            <md-dialog-content>
+                <div class="md-dialog-content">
+                    <md-input-container style="width: 100%;">
+                        <label>Name</label>
+                        <input ng-model="newTestPlan.name" type="text"/>
+                    </md-input-container>
+                    <md-input-container style="width: 100%;">
+                        <label>Description</label>
+                        <input ng-model="newTestPlan.description" type="text"/>
+                    </md-input-container>
+                    <md-input-container style="width: 100%">
+                        <label>Type</label>
+                        <md-select ng-model="newTestPlan.testplanType">
+                            <md-option value="DATA_INSTANCE">Data Instance</md-option>
+                            <md-option value="ISOLATED">Isolated</md-option>
+                        </md-select>
+                    </md-input-container>
+                </div>
+            </md-dialog-content>
+            <md-dialog-actions layout="row">
+                <md-button class="btn btn-default btn-sm" href="#/help" target="_blank">
+                    <i class="fa fa-question fa-fw">&nbsp; </i> Help
+                </md-button>
+                <span flex></span>
+                <md-button class="btn btn-default btn-sm" ng-click="cancel()">
+                    <i class="fa fa-times fa-fw">&nbsp; </i> Cancel
+                </md-button>
+                <md-button class="btn btn-primary btn-sm" ng-disabled="!newTestPlan.name" ng-click="createNewTestPlan()">
+                    <i class="fa fa-plus fa-fw">&nbsp; </i> Create
+                </md-button>
+            </md-dialog-actions>
+        </form>
+    </md-dialog></script> <script type="text/ng-template" id="ImportXMLPublicProfileModal.html"><md-dialog aria-label="Import Public Profile">
+        <form ng-cloak>
+            <md-toolbar>
+                <div class="md-toolbar-tools">
+                    <h2>Import Public Profile</h2>
+                    <span flex></span>
+                </div>
+            </md-toolbar>
+            <md-dialog-content>
+                <div class="md-dialog-content">
+                    <div ng-show="!isSuperUser">
+                        <md-input-container style="width: 100%">
+                            <label>PASSCODE</label>
+                            <input ng-model="passcode" type="password" ng-change="checkPassCode()"/>
+                        </md-input-container>
+                    </div>
+                    <div ng-show="isSuperUser">
+                        <div class="form-group">
+                            <div class="col-md-12">
+                                <label for="profilePublicFile" class="custom-file-upload">
+                                    <i class="fa fa-cloud-upload"></i> Choose Profile XML File
+                                    <div id="errorMessageForPublicProfile"></div>
+                                </label>
+                                <input id="profilePublicFile" accept=".xml" onchange="angular.element(this).scope().validateForProfileXMLFile(this.files)" type="file" name="profilePublicFile" />
+                            </div>
+                            <div class="col-md-12">
+                                <label for="valueSetPublicFile" class="custom-file-upload">
+                                    <i class="fa fa-cloud-upload"></i> Choose ValueSet XML File
+                                    <div id="errorMessageForValueSetPublic"></div>
+                                </label>
+                                <input id="valueSetPublicFile" accept=".xml" onchange="angular.element(this).scope().validateForValueSetXMLFile(this.files)" type="file" name="valueSetPublicFile" />
+                            </div>
+                            <div class="col-md-12">
+                                <label for="constraintsPublicFile" class="custom-file-upload">
+                                    <i class="fa fa-cloud-upload"></i> Choose Constraints XML File
+                                    <div id="errorMessageForConstraintsPublic"></div>
+                                </label>
+                                <input id="constraintsPublicFile" accept=".xml" onchange="angular.element(this).scope().validateForConstraintsXMLFile(this.files)" type="file" name="constraintsPublicFile" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </md-dialog-content>
+            <md-dialog-actions layout="row">
+                <md-button class="btn btn-default btn-sm" href="#/help" target="_blank">
+                    <i class="fa fa-question fa-fw">&nbsp; </i> Help
+                </md-button>
+                <span flex></span>
+                <md-button class="btn btn-default btn-sm" ng-click="cancel()">
+                    <i class="fa fa-times fa-fw">&nbsp; </i> Cancel
+                </md-button>
+                <md-button id="importPublicProfileButton" class="btn btn-primary btn-sm" disabled ng-click="importProfileXML();">
+                    <i class="fa fa-plus fa-fw">&nbsp; </i> Import
+                </md-button>
+            </md-dialog-actions>
+        </form>
+    </md-dialog></script> <script type="text/ng-template" id="ImportXMLProfileModal.html"><md-dialog aria-label="Import XML Profile">
+        <form ng-cloak>
+            <md-toolbar>
+                <div class="md-toolbar-tools">
+                    <h2>Import XML Profile</h2>
+                    <span flex></span>
+                </div>
+            </md-toolbar>
+            <md-dialog-content>
+                <div class="md-dialog-content">
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <label for="profileXMLFile" class="custom-file-upload">
+                                <i class="fa fa-cloud-upload"></i> Choose Profile XML File
+                                <div id="errorMessageForXMLProfile"></div>
+                            </label>
+                            <input id="profileXMLFile" accept=".xml" onchange="angular.element(this).scope().validateForProfileXMLFile(this.files)" type="file" name="profileXMLFile" />
+                        </div>
+                        <div class="col-md-12">
+                            <label for="valueSetXMLFile" class="custom-file-upload">
+                                <i class="fa fa-cloud-upload"></i> Choose ValueSet XML File
+                                <div id="errorMessageForValueSetXML"></div>
+                            </label>
+                            <input id="valueSetXMLFile" accept=".xml" onchange="angular.element(this).scope().validateForValueSetXMLFile(this.files)" type="file" name="valueSetXMLFile" />
+                        </div>
+                        <div class="col-md-12">
+                            <label for="constraintsXMLFile" class="custom-file-upload">
+                                <i class="fa fa-cloud-upload"></i> Choose Constraints XML File
+                                <div id="errorMessageForConstraintsXML"></div>
+                            </label>
+                            <input id="constraintsXMLFile" accept=".xml" onchange="angular.element(this).scope().validateForConstraintsXMLFile(this.files)" type="file" name="constraintsXMLFile" />
+                        </div>
+                    </div>
+                </div>
+            </md-dialog-content>
+            <md-dialog-actions layout="row">
+                <md-button class="btn btn-default btn-sm" href="#/help" target="_blank">
+                    <i class="fa fa-question fa-fw">&nbsp; </i> Help
+                </md-button>
+                <span flex></span>
+                <md-button class="btn btn-default btn-sm" ng-click="cancel()">
+                    <i class="fa fa-times fa-fw">&nbsp; </i> Cancel
+                </md-button>
+                <md-button id="importProfileButton" class="btn btn-primary btn-sm" disabled ng-click="importProfileXML();">
+                    <i class="fa fa-plus fa-fw">&nbsp; </i> Import
+                </md-button>
+            </md-dialog-actions>
+        </form>
+    </md-dialog></script> <script type="text/ng-template" id="ReplaceXMLProfileModal.html"><md-dialog aria-label="Replace XML Profile">
+        <form ng-cloak>
+            <md-toolbar>
+                <div class="md-toolbar-tools">
+                    <h2>Replace XML Profile</h2>
+                    <span flex></span>
+                </div>
+            </md-toolbar>
+            <md-dialog-content>
+                <div class="md-dialog-content">
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <label for="replaceProfileXMLFile" class="custom-file-upload">
+                                <i class="fa fa-cloud-upload"></i> Choose Profile XML File
+                                <div id="errorMessageForReplaceProfile"></div>
+                            </label>
+                            <input id="replaceProfileXMLFile" accept=".xml" onchange="angular.element(this).scope().validateForProfileXMLFile(this.files)" type="file" name="replaceProfileXMLFile" />
+                        </div>
+                        <div class="col-md-12">
+                            <label for="replaceValueSetXMLFile" class="custom-file-upload">
+                                <i class="fa fa-cloud-upload"></i> Choose ValueSet XML File
+                                <div id="errorMessageForReplaceValueSet"></div>
+                            </label>
+                            <input id="replaceValueSetXMLFile" accept=".xml" onchange="angular.element(this).scope().validateForValueSetXMLFile(this.files)" type="file" name="replaceValueSetXMLFile" />
+                        </div>
+                        <div class="col-md-12">
+                            <label for="replaceConstraintsXMLFile" class="custom-file-upload">
+                                <i class="fa fa-cloud-upload"></i> Choose Constraints XML File
+                                <div id="errorMessageForReplaceConstraints"></div>
+                            </label>
+                            <input id="replaceConstraintsXMLFile" accept=".xml" onchange="angular.element(this).scope().validateForConstraintsXMLFile(this.files)" type="file" name="replaceConstraintsXMLFile" />
+                        </div>
+                    </div>
+                </div>
+            </md-dialog-content>
+            <md-dialog-actions layout="row">
+                <md-button class="btn btn-default btn-sm" href="#/help" target="_blank">
+                    <i class="fa fa-question fa-fw">&nbsp; </i> Help
+                </md-button>
+                <span flex></span>
+                <md-button class="btn btn-default btn-sm" ng-click="cancel()">
+                    <i class="fa fa-times fa-fw">&nbsp; </i> Cancel
+                </md-button>
+                <md-button id="replaceProfileButton" class="btn btn-primary btn-sm" disabled ng-click="replaceProfileXML();">
+                    <i class="fa fa-repeat fa-fw">&nbsp; </i> Replace
+                </md-button>
+            </md-dialog-actions>
+        </form>
+    </md-dialog></script> <script type="text/ng-template" id="ReplacePublicProfileModal.html"><md-dialog aria-label="Replace Public Profile">
+        <form ng-cloak>
+            <md-toolbar>
+                <div class="md-toolbar-tools">
+                    <h2>Replace Public Profile</h2>
+                    <span flex></span>
+                </div>
+            </md-toolbar>
+            <md-dialog-content>
+                <div class="md-dialog-content">
+                    <div ng-show="!isSuperUser">
+                        <md-input-container style="width: 100%">
+                            <label>PASSCODE</label>
+                            <input ng-model="passcode" type="password" ng-change="checkPassCode()"/>
+                        </md-input-container>
+                    </div>
+                    <div ng-show="isSuperUser">
+                        <div class="form-group">
+                            <div class="col-md-12">
+                                <label for="replacePublicProfileXMLFile" class="custom-file-upload">
+                                    <i class="fa fa-cloud-upload"></i> Choose Profile XML File
+                                    <div id="errorMessageForReplacePublicProfile"></div>
+                                </label>
+                                <input id="replacePublicProfileXMLFile" accept=".xml" onchange="angular.element(this).scope().validateForProfileXMLFile(this.files)" type="file" name="replacePublicProfileXMLFile" />
+                            </div>
+                            <div class="col-md-12">
+                                <label for="replacePublicValueSetXMLFile" class="custom-file-upload">
+                                    <i class="fa fa-cloud-upload"></i> Choose ValueSet XML File
+                                    <div id="errorMessageForReplacePublicValueSet"></div>
+                                </label>
+                                <input id="replacePublicValueSetXMLFile" accept=".xml" onchange="angular.element(this).scope().validateForValueSetXMLFile(this.files)" type="file" name="replacePublicValueSetXMLFile" />
+                            </div>
+                            <div class="col-md-12">
+                                <label for="replacePublicConstraintsXMLFile" class="custom-file-upload">
+                                    <i class="fa fa-cloud-upload"></i> Choose Constraints XML File
+                                    <div id="errorMessageForReplacePublicConstraints"></div>
+                                </label>
+                                <input id="replacePublicConstraintsXMLFile" accept=".xml" onchange="angular.element(this).scope().validateForConstraintsXMLFile(this.files)" type="file" name="replacePublicConstraintsXMLFile" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </md-dialog-content>
+            <md-dialog-actions layout="row">
+                <md-button class="btn btn-default btn-sm" href="#/help" target="_blank">
+                    <i class="fa fa-question fa-fw">&nbsp; </i> Help
+                </md-button>
+                <span flex></span>
+                <md-button class="btn btn-default btn-sm" ng-click="cancel()">
+                    <i class="fa fa-times fa-fw">&nbsp; </i> Cancel
+                </md-button>
+                <md-button id="replacePublicProfileButton" class="btn btn-primary btn-sm" disabled ng-click="replaceProfileXML();">
+                    <i class="fa fa-repeat fa-fw">&nbsp; </i> Replace
+                </md-button>
+            </md-dialog-actions>
+        </form>
+    </md-dialog></script> <script type="text/ng-template" id="EditTestStoryModal.html"><md-dialog aria-label="Edit Test Story Configuration">
+        <form ng-cloak>
+            <md-toolbar>
+                <div class="md-toolbar-tools">
+                    <h2>Edit Test Story Configuration</h2>
+                    <span flex></span>
+                </div>
+            </md-toolbar>
+            <md-dialog-content style="width:1000px;">
+                <div class="md-dialog-content">
+                    <md-input-container style="width: 100%;">
+                        <label>Name</label>
+                        <input ng-model="selectedTestStoryConfig.name" type="text"/>
+                    </md-input-container>
+                    <div class="row">
+                        <div class="col-md-6">Title</div>
+                        <div class="col-md-2" style="text-align:center;">Test Story Entry</div>
+                        <div class="col-md-2" style="text-align:center;">Test Summary Entry</div>
+                        <div class="col-md-2" style="text-align:center;">Del</div>
+                    </div>
+                    <div dnd-list="selectedTestStoryConfig.testStoryConfig" >
+                        <div ng-repeat="item in selectedTestStoryConfig.testStoryConfig"
+                             dnd-draggable="item"
+                             dnd-moved="selectedTestStoryConfig.testStoryConfig.splice($index, 1)"
+                             dnd-effect-allowed="move"
+                             dnd-dragend="setPosition(item,$index);">
+
+                                <div dnd-handle style="cursor: move;position: absolute;top: 14px;"></div>
+                                <div class="row name" >
+                                    <input type="text" required ng-model="item.title" class="col-md-6 input_dnd" ng-disabled="item.scope=='default'" />
+                                    <div class="col-md-2" style="text-align:center;"><input type="checkbox" ng-model="item.present" /></div>
+                                    <div class="col-md-2" style="text-align:center;"><input type="checkbox" ng-model="item.summaryEntry" /></div>
+                                    <div style="text-align:center;"><i class="fa fa-times fa-fw" ng-click="deleteItem($index);" ng-show="item.scope !== 'default'"/></div>
+                                </div>
+                        </div>
+                        <li class="dndPlaceholder">
+                            <strong style="color:green;"> Drop Here</strong>
+                            <br/>
+                        </li>
+                    </div>
+                    <button class="btn btn-sm btn-info" ng-click="addField()"><i class="fa fa-plus"></i> Add Field</button>
+                </div>
+            </md-dialog-content>
+            <md-dialog-actions layout="row">
+                <md-button class="btn btn-default btn-sm" href="#/help" target="_blank">
+                    <i class="fa fa-question fa-fw">&nbsp; </i> Help
+                </md-button>
+                <span flex></span>
+                <md-button class="btn btn-default btn-sm" ng-click="cancel()">
+                    <i class="fa fa-times fa-fw">&nbsp; </i> Cancel
+                </md-button>
+                <md-button class="btn btn-primary btn-sm" ng-click="saveTestStoryConfig();">
+                    <i class="fa fa-repeat fa-fw">&nbsp; </i> Save
+                </md-button>
+            </md-dialog-actions>
+        </form>
+    </md-dialog></script> <script type="text/ng-template" id="GVTConfirm.html"><md-dialog aria-label="Confirmation">
+        <form ng-cloak>
+            <md-toolbar>
+                <div class="md-toolbar-tools">
+                    <h2>Confirmation</h2>
+                    <span flex></span>
+                </div>
+            </md-toolbar>
+            <md-dialog-content>
+                <div class="md-dialog-content">
+                        <div class="alert alert-warning">
+                            This Opertaion may take a few minutes depending on your test plan size. you will be notified by e-mail when your test plan is available on GVT
+                        </div>
+                    <br/>
+                    <md-checkbox ng-model="preference.hideGvtDialg">Don't show this message again</md-checkbox>
+                </div>
+            </md-dialog-content>
+            <md-dialog-actions layout="row" layout-align="end end">
+                <md-button class="btn btn-primary btn-sm pull-right"  ng-click="ok()">Ok
+            </md-dialog-actions>
+        </form>
+    </md-dialog></script>
